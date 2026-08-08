@@ -3,6 +3,7 @@
  * Scroll-driven cinematic experience
  * GSAP ScrollTrigger + Lenis
  * Mobile-first with graceful fallbacks
+ * Iframe-friendly
  */
 
 (function () {
@@ -10,10 +11,16 @@
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  // Viewport width only for scrubbing (iPad landscape stays desktop-like)
   const isNarrow = () => window.matchMedia("(max-width: 768px)").matches;
+  const isIframe = (function () {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  })();
 
   if (isTouch) document.body.classList.add("touch-device");
+  if (isIframe) {
+    document.documentElement.classList.add("is-iframe");
+    document.body.classList.add("is-iframe");
+  }
 
   const preloader = document.getElementById("preloader");
   const nav = document.getElementById("nav");
@@ -24,12 +31,11 @@
   const videoFinale = document.getElementById("video-finale");
   const loopVideos = document.querySelectorAll(".loop-video");
 
-  /* ---------- Custom cursor (desktop only) ---------- */
   const cursor = document.getElementById("cursor");
   const follower = document.getElementById("cursorFollower");
   let mouseX = 0, mouseY = 0, fx = 0, fy = 0;
 
-  if (!isTouch && cursor && follower) {
+  if (!isTouch && !isIframe && cursor && follower) {
     window.addEventListener("mousemove", (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -57,9 +63,8 @@
     });
   }
 
-  /* ---------- Magnetic ---------- */
   function initMagnetic() {
-    if (isTouch) return;
+    if (isTouch || isIframe) return;
     document.querySelectorAll(".magnetic").forEach((btn) => {
       btn.addEventListener("mousemove", (e) => {
         const r = btn.getBoundingClientRect();
@@ -73,7 +78,6 @@
     });
   }
 
-  /* ---------- Preloader ---------- */
   function hidePreloader() {
     if (!preloader) return;
     preloader.classList.add("is-done");
@@ -92,11 +96,10 @@
     });
   }
 
-  /* ---------- Lenis ---------- */
   let lenis = null;
 
   function initLenis() {
-    if (prefersReducedMotion || typeof Lenis === "undefined") return;
+    if (prefersReducedMotion || isIframe || typeof Lenis === "undefined") return;
 
     lenis = new Lenis({
       duration: 1.1,
@@ -105,7 +108,6 @@
       touchMultiplier: 1.35,
     });
 
-    // Single RAF loop only — avoids double-RAF conflict with GSAP ticker
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -117,7 +119,6 @@
     });
   }
 
-  /* ---------- Video helpers ---------- */
   function setProgress(video, progress) {
     if (!video || !isFinite(video.duration) || video.duration === 0) return;
     const t = Math.max(0, Math.min(1, progress)) * video.duration;
@@ -155,12 +156,10 @@
     });
   }
 
-  /* ---------- ScrollTrigger ---------- */
   function initScrollTriggers() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
-    // Nav hide/show
     let lastY = 0;
     ScrollTrigger.create({
       start: 0,
@@ -173,7 +172,6 @@
       },
     });
 
-    // Section indicator
     document.querySelectorAll(".chapter[data-chapter]").forEach((ch) => {
       ScrollTrigger.create({
         trigger: ch,
@@ -196,7 +194,6 @@
       });
     }
 
-    // Text reveals
     if (prefersReducedMotion) {
       gsap.set(".reveal", { opacity: 1, y: 0 });
     } else {
@@ -217,7 +214,6 @@
 
     const canScrub = !isNarrow();
 
-    // Hero scrub
     if (canScrub && videoHero) {
       videoHero.pause();
       videoHero.currentTime = 0;
@@ -234,7 +230,6 @@
       videoHero.currentTime = 0;
     }
 
-    // Arrival scrub
     if (canScrub && videoArrival) {
       videoArrival.pause();
       videoArrival.currentTime = 0;
@@ -249,7 +244,6 @@
       });
     }
 
-    // Finale scrub
     if (canScrub && videoFinale) {
       videoFinale.pause();
       videoFinale.currentTime = 0;
@@ -264,7 +258,6 @@
       });
     }
 
-    // Soft parallax on non-pinned sections
     gsap.utils.toArray(".chapter-durbar .chapter-content, .chapter-gardens .chapter-content, .chapter-suite .chapter-content").forEach((el) => {
       gsap.to(el, {
         yPercent: -8,
@@ -279,7 +272,6 @@
     });
   }
 
-  /* ---------- Boot ---------- */
   async function boot() {
     await waitForHero();
     hidePreloader();
