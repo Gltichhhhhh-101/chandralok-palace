@@ -8,87 +8,57 @@
   <meta property="og:description" content="Where moonlight meets marble. A cinematic residence of soft royalty." />
   <meta property="og:image" content="Poster%3AOG.jpg" />
   <title>The Chandralok Palace</title>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-
-  <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- Preload only the hero video -->
   <link rel="preload" href="01-hero-aerial.mp4" as="video" type="video/mp4" />
 </head>
 <body>
-  <!-- Custom cursor -->
   <div class="cursor" id="cursor" aria-hidden="true"></div>
   <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
-
-  <!-- Preloader -->
   <div class="preloader" id="preloader">
     <div class="preloader-inner">
       <p class="preloader-word">Chandralok</p>
       <div class="preloader-bar"><span></span></div>
     </div>
   </div>
-
-  <!-- Fixed section indicator -->
   <div class="section-indicator" id="sectionIndicator" aria-hidden="true">
     <span class="si-num" data-num="01">01</span>
   </div>
-
-  <!-- Navigation -->
   <header class="nav" id="nav">
-    <a href="#hero" class="nav-logo">Chandralok</a>
+    <a href="index.html" class="nav-logo">Chandralok</a>
     <nav class="nav-links">
-      <a href="#arrival">Arrival</a>
-      <a href="#durbar">Durbar</a>
-      <a href="#suite">Suite</a>
-      <a href="#gardens">Gardens</a>
-      <a href="#finale">Night</a>
+      <a href="about.html">About</a>
+      <a href="rooms.html">Rooms</a>
+      <a href="#arrival">Journey</a>
+      <a href="contact.html">Contact</a>
     </nav>
-    <a href="#reserve" class="nav-cta magnetic">Reserve</a>
+    <a href="contact.html" class="nav-cta magnetic">Reserve</a>
   </header>
-
   <main id="main">
-
-    <!-- 01 HERO -->
     <section class="chapter chapter-hero" id="hero" data-chapter="01">
       <div class="media-wrap">
-        <video class="scrub-video" id="video-hero" src="01-hero-aerial.mp4" muted playsinline preload="auto" poster="Poster%3AOG.jpg"></video>
+        <video class="scrub-video" id="video-hero" src="01-hero-aerial.mp4" muted playsinline preload="auto"></video>
         <img class="mobile-hero-img" src="Mobile%20hero.jpg" alt="The Chandralok Palace from above" />
       </div>
       <div class="chapter-content hero-content">
         <p class="eyebrow reveal">A private lake palace</p>
-        <h1 class="hero-title reveal">
-          <span class="line">The Chandralok</span>
-          <span class="line">Palace</span>
-        </h1>
+        <h1 class="hero-title reveal"><span class="line">The Chandralok</span><span class="line">Palace</span></h1>
         <p class="hero-sub reveal">Where moonlight rests on marble</p>
       </div>
-      <div class="scroll-hint reveal">
-        <span>Scroll to enter</span>
-        <div class="scroll-line"></div>
-      </div>
+      <div class="scroll-hint reveal"><span>Scroll to enter</span><div class="scroll-line"></div></div>
     </section>
-
-    <!-- 02 ARRIVAL -->
     <section class="chapter chapter-arrival" id="arrival" data-chapter="02">
       <div class="media-wrap">
-        <video class="scrub-video" id="video-arrival" src="02-arrival-gate.mp4" muted playsinline preload="none" poster="Poster%3AOG.jpg"></video>
+        <video class="scrub-video" id="video-arrival" src="02-arrival-gate.mp4" muted playsinline preload="auto"></video>
       </div>
       <div class="chapter-content">
         <p class="chapter-num reveal">02</p>
         <h2 class="chapter-title reveal">The Arrival</h2>
-        <p class="chapter-body reveal">
-          Elephant guardians stand in quiet vigil. Petals drift across still water.
-          The arch opens not with ceremony, but with a held breath.
-        </p>
+        <p class="chapter-body reveal">Elephant guardians stand in quiet vigil. Petals drift across still water. The arch opens not with ceremony, but with a held breath.</p>
       </div>
     </section>
-
-    <!-- 03 DURBAR -->
     <section class="chapter chapter-durbar" id="durbar" data-chapter="03">
       <div class="media-wrap">
         <video class="loop-video" id="video-durbar" src="03-durbar-lobby.mp4" muted playsinline loop preload="none"></video>
@@ -96,14 +66,9 @@
       <div class="chapter-content">
         <p class="chapter-num reveal">03</p>
         <h2 class="chapter-title reveal">Durbar Hall</h2>
-        <p class="chapter-body reveal">
-          Light falls through painted domes. Marble cools the air.
-          Here the palace listens before it speaks.
-        </p>
+        <p class="chapter-body reveal">Light falls through painted domes. Marble cools the air. Here the palace listens before it speaks.</p>
       </div>
     </section>
-
-    <!-- 04 SUITE -->
     <section class="chapter chapter-suite" id="suite" data-chapter="04">
       <div class="media-wrap">
         <video class="loop-video" id="video-suite" src="04-royal-suite.mp4" muted playsinline loop preload="none"></video>
@@ -111,27 +76,14 @@
       <div class="chapter-content suite-content">
         <p class="chapter-num reveal">04</p>
         <h2 class="chapter-title reveal">The Maharaja Suite</h2>
-        <p class="chapter-body reveal">
-          Silk, sandalwood, and silence. A private world suspended above the lake.
-        </p>
-        <div class="suite-cards" id="suiteCards">
-          <article class="suite-card">
-            <h3>The Chamber</h3>
-            <p>Four-poster canopy, hand-painted murals, and morning light filtered through jali screens.</p>
-          </article>
-          <article class="suite-card">
-            <h3>The Bath</h3>
-            <p>Rose-petal immersion, carved marble, and the soft glow of brass lanterns.</p>
-          </article>
-          <article class="suite-card">
-            <h3>The Terrace</h3>
-            <p>Private waterside seating where the lake mirrors the sky at dusk.</p>
-          </article>
+        <p class="chapter-body reveal">Silk, sandalwood, and silence. A private world suspended above the lake.</p>
+        <div class="suite-cards">
+          <article class="suite-card"><h3>The Chamber</h3><p>Four-poster canopy, hand-painted murals, and morning light filtered through jali screens.</p></article>
+          <article class="suite-card"><h3>The Bath</h3><p>Rose-petal immersion, carved marble, and the soft glow of brass lanterns.</p></article>
+          <article class="suite-card"><h3>The Terrace</h3><p>Private waterside seating where the lake mirrors the sky at dusk.</p></article>
         </div>
       </div>
     </section>
-
-    <!-- 05 GARDENS -->
     <section class="chapter chapter-gardens" id="gardens" data-chapter="05">
       <div class="media-wrap">
         <video class="loop-video" id="video-gardens" src="05-pool-gardens.mp4" muted playsinline loop preload="none"></video>
@@ -139,44 +91,30 @@
       <div class="chapter-content">
         <p class="chapter-num reveal">05</p>
         <h2 class="chapter-title reveal">Pool & Gardens</h2>
-        <p class="chapter-body reveal">
-          Elephant fountains keep gentle time. Peacocks move through the shade.
-          The water holds the palace like a secret.
-        </p>
+        <p class="chapter-body reveal">Elephant fountains keep gentle time. Peacocks move through the shade. The water holds the palace like a secret.</p>
       </div>
     </section>
-
-    <!-- 06 FINALE -->
     <section class="chapter chapter-finale" id="finale" data-chapter="06">
       <div class="media-wrap">
-        <video class="scrub-video" id="video-finale" src="06-night-finale.mp4" muted playsinline preload="none" poster="Poster%3AOG.jpg"></video>
+        <video class="scrub-video" id="video-finale" src="06-night-finale.mp4" muted playsinline preload="auto"></video>
       </div>
-      <div class="chapter-content finale-content">
+      <div class="chapter-content">
         <p class="chapter-num reveal">06</p>
         <h2 class="chapter-title reveal">Nightfall</h2>
-        <p class="chapter-body reveal">
-          Lamps awaken along the colonnades. The palace becomes a constellation
-          reflected in still water — and the day softens into memory.
-        </p>
+        <p class="chapter-body reveal">Lamps awaken along the colonnades. The palace becomes a constellation reflected in still water — and the day softens into memory.</p>
       </div>
     </section>
-
-    <!-- FOOTER -->
     <footer class="footer" id="reserve">
       <div class="footer-inner">
         <p class="footer-eyebrow">A residence of quiet grandeur</p>
         <h2 class="footer-title">The Chandralok Palace</h2>
-        <p class="footer-body">
-          Private reservations are considered with care.<br />
-          We welcome those who seek stillness as much as splendour.
-        </p>
-        <a href="mailto:reservations@chandralok.palace" class="footer-cta magnetic">Request a stay</a>
+        <p class="footer-body">Private reservations are considered with care.<br />We welcome those who seek stillness as much as splendour.</p>
+        <a href="contact.html" class="footer-cta magnetic">Request a stay</a>
         <p class="footer-note">Rajasthan · India</p>
       </div>
     </footer>
-
+    <p class="site-credit">a ~yb creation</p>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
