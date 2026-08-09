@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — The Chandralok Palace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="touch-device">
+  <header class="nav" id="nav">
+    <a href="index.html" class="nav-logo">Chandralok</a>
+    <nav class="nav-links">
+      <a href="about.html">About</a>
+      <a href="rooms.html">Rooms</a>
+      <a href="index.html#arrival">Journey</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <a href="contact.html" class="nav-cta">Reserve</a>
+  </header>
+
+  <div class="contact-wrap">
+    <div class="contact-card">
+      <h1>Request a stay</h1>
+      <p class="sub">We respond with care. Share a few details and we shall write back.</p>
+      <form action="mailto:reservations@chandralok.palace" method="POST" enctype="text/plain">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required placeholder="Your name" />
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="you@email.com" />
+        <label for="dates">Preferred dates</label>
+        <input type="text" id="dates" name="dates" placeholder="e.g. 12–16 November" />
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4" placeholder="How may we welcome you?"></textarea>
+        <button type="submit">Send request</button>
+      </form>
+    </div>
+  </div>
+
+  <p class="site-credit">a ~yb creation</p>
+</body>
+</html>
