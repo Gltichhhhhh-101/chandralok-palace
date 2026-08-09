@@ -1,6 +1,6 @@
 /**
  * The Chandralok Palace — butter-smooth cinematic scroll
- * GSAP ScrollTrigger + Lenis · iframe-safe · no poster flash
+ * Per-section: 01 hero scrub | 02 arrival scrub | 03–05 loops | 06 finale scrub
  */
 (function () {
   "use strict";
@@ -21,11 +21,17 @@
   var preloader = document.getElementById("preloader");
   var nav = document.getElementById("nav");
   var siNum = document.querySelector("#sectionIndicator .si-num");
-  var videoHero = document.getElementById("video-hero");
-  var videoArrival = document.getElementById("video-arrival");
-  var videoFinale = document.getElementById("video-finale");
-  var loopVideos = document.querySelectorAll(".loop-video");
+
+  // Journey media
+  var videoHero = document.getElementById("video-hero");       // 01 scrub
+  var videoArrival = document.getElementById("video-arrival"); // 02 scrub
+  var videoDurbar = document.getElementById("video-durbar");   // 03 loop
+  var videoSuite = document.getElementById("video-suite");     // 04 loop
+  var videoGardens = document.getElementById("video-gardens"); // 05 loop
+  var videoFinale = document.getElementById("video-finale");   // 06 scrub
+
   var scrubVideos = [videoHero, videoArrival, videoFinale].filter(Boolean);
+  var loopVideos = [videoDurbar, videoSuite, videoGardens].filter(Boolean);
 
   var cursor = document.getElementById("cursor");
   var follower = document.getElementById("cursorFollower");
@@ -67,11 +73,14 @@
   function armScrubVideo(video) {
     if (!video) return Promise.resolve();
     return new Promise(function (resolve) {
-      video.muted = true; video.playsInline = true;
-      video.setAttribute("playsinline", ""); video.preload = "auto";
+      video.muted = true;
+      video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      video.preload = "auto";
+      video.pause();
       var ready = function () {
         video.removeEventListener("loadeddata", ready);
-        try { video.currentTime = 0.01; } catch (_) {}
+        try { video.currentTime = 0.001; } catch (_) {}
         video.removeAttribute("poster");
         video.classList.add("is-ready");
         resolve();
@@ -80,67 +89,78 @@
       else {
         video.addEventListener("loadeddata", ready);
         video.load();
-        setTimeout(ready, 3000);
+        setTimeout(ready, 2800);
       }
     });
   }
 
+  function prepLoopVideo(video) {
+    if (!video) return;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.loop = true;
+    video.removeAttribute("poster");
+  }
+
+  // Smooth scrub state (lerp)
   var scrubState = new Map();
   function setScrubTarget(video, progress) {
     if (!video || !isFinite(video.duration) || video.duration === 0) return;
-    var t = Math.max(0, Math.min(1, progress)) * (video.duration - 0.05);
+    var t = Math.max(0, Math.min(1, progress)) * Math.max(0, video.duration - 0.04);
     var state = scrubState.get(video);
-    if (!state) { state = { target: t, current: video.currentTime || 0 }; scrubState.set(video, state); }
+    if (!state) {
+      state = { target: t, current: video.currentTime || 0 };
+      scrubState.set(video, state);
+    }
     state.target = t;
   }
 
   var scrubRaf = null;
   function scrubLoop() {
     scrubState.forEach(function (state, video) {
-      state.current += (state.target - state.current) * 0.22;
-      if (Math.abs(state.target - state.current) > 0.008) {
+      state.current += (state.target - state.current) * 0.18;
+      if (Math.abs(state.target - state.current) > 0.01) {
         try { video.currentTime = state.current; } catch (_) {}
       }
     });
     scrubRaf = requestAnimationFrame(scrubLoop);
   }
-  function startScrubLoop() { if (!scrubRaf) scrubRaf = requestAnimationFrame(scrubLoop); }
+  function startScrubLoop() {
+    if (!scrubRaf) scrubRaf = requestAnimationFrame(scrubLoop);
+  }
 
   var lenis = null;
   function initLenis() {
     if (prefersReducedMotion || isIframe || typeof Lenis === "undefined") return;
     lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.15,
       easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-      smoothWheel: true, touchMultiplier: 1.4, infinite: false
+      smoothWheel: true,
+      touchMultiplier: 1.35
     });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
-    lenis.on("scroll", function () { if (typeof ScrollTrigger !== "undefined") ScrollTrigger.update(); });
+    lenis.on("scroll", function () {
+      if (typeof ScrollTrigger !== "undefined") ScrollTrigger.update();
+    });
   }
 
-  function initLoopVideos() {
-    if (!("IntersectionObserver" in window)) {
-      loopVideos.forEach(function (v) { v.muted = true; v.playsInline = true; v.play().catch(function () {}); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var v = entry.target;
-        if (entry.isIntersecting) { if (v.readyState < 2) v.load(); v.play().catch(function () {}); }
-        else v.pause();
-      });
-    }, { threshold: 0.25 });
-    loopVideos.forEach(function (v) {
-      v.muted = true; v.playsInline = true; v.setAttribute("playsinline", "");
-      v.removeAttribute("poster"); io.observe(v);
-    });
+  function playLoop(video) {
+    if (!video) return;
+    if (video.readyState < 2) video.load();
+    video.play().catch(function () {});
+  }
+  function pauseLoop(video) {
+    if (!video) return;
+    video.pause();
   }
 
   function initScrollTriggers() {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
+    // Nav hide / show
     var lastY = 0;
     ScrollTrigger.create({
       start: 0, end: "max",
@@ -152,6 +172,7 @@
       }
     });
 
+    // Section indicator
     document.querySelectorAll(".chapter[data-chapter]").forEach(function (ch) {
       ScrollTrigger.create({
         trigger: ch, start: "top 55%", end: "bottom 45%",
@@ -162,61 +183,142 @@
 
     function updateIndicator(num) {
       if (!siNum) return;
-      gsap.to(siNum, { opacity: 0, duration: 0.18, onComplete: function () {
-        siNum.textContent = num; gsap.to(siNum, { opacity: 1, duration: 0.28 });
-      }});
+      gsap.to(siNum, {
+        opacity: 0, duration: 0.16,
+        onComplete: function () {
+          siNum.textContent = num;
+          gsap.to(siNum, { opacity: 1, duration: 0.26 });
+        }
+      });
     }
 
-    if (prefersReducedMotion) gsap.set(".reveal", { opacity: 1, y: 0 });
-    else {
+    // Text reveals
+    if (prefersReducedMotion) {
+      gsap.set(".reveal", { opacity: 1, y: 0 });
+    } else {
       gsap.utils.toArray(".reveal").forEach(function (el) {
-        gsap.fromTo(el, { opacity: 0, y: 20 }, {
-          opacity: 1, y: 0, duration: 0.9, ease: "power2.out",
+        gsap.fromTo(el, { opacity: 0, y: 18 }, {
+          opacity: 1, y: 0, duration: 0.85, ease: "power2.out",
           scrollTrigger: { trigger: el, start: "top 92%", toggleActions: "play none none none" }
         });
       });
     }
+
     if (prefersReducedMotion) return;
 
     var canScrub = !isNarrow();
     startScrubLoop();
-    var scrubOpts = { pin: true, pinSpacing: true, anticipatePin: 1, scrub: 0.8, invalidateOnRefresh: true };
 
+    var pinBase = {
+      pin: true,
+      pinSpacing: true,
+      anticipatePin: 1,
+      scrub: 0.75,
+      invalidateOnRefresh: true
+    };
+
+    // —— 01 HERO (scrub aerial) ——
     if (canScrub && videoHero) {
-      ScrollTrigger.create(Object.assign({}, scrubOpts, {
-        trigger: "#hero", start: "top top", end: "+=170%",
+      ScrollTrigger.create(Object.assign({}, pinBase, {
+        trigger: "#hero",
+        start: "top top",
+        end: "+=180%",
         onUpdate: function (self) { setScrubTarget(videoHero, self.progress); }
       }));
     } else if (videoHero) {
-      videoHero.pause(); try { videoHero.currentTime = 0; } catch (_) {}
+      videoHero.pause();
+      try { videoHero.currentTime = 0; } catch (_) {}
     }
+
+    // —— 02 ARRIVAL (scrub gate) ——
     if (canScrub && videoArrival) {
-      ScrollTrigger.create(Object.assign({}, scrubOpts, {
-        trigger: "#arrival", start: "top top", end: "+=150%",
+      ScrollTrigger.create(Object.assign({}, pinBase, {
+        trigger: "#arrival",
+        start: "top top",
+        end: "+=160%",
         onUpdate: function (self) { setScrubTarget(videoArrival, self.progress); }
       }));
     }
+
+    // —— 03 DURBAR (loop on enter) ——
+    if (videoDurbar) {
+      prepLoopVideo(videoDurbar);
+      ScrollTrigger.create({
+        trigger: "#durbar",
+        start: "top 70%",
+        end: "bottom 30%",
+        onEnter: function () { playLoop(videoDurbar); },
+        onEnterBack: function () { playLoop(videoDurbar); },
+        onLeave: function () { pauseLoop(videoDurbar); },
+        onLeaveBack: function () { pauseLoop(videoDurbar); }
+      });
+    }
+
+    // —— 04 SUITE (loop on enter) ——
+    if (videoSuite) {
+      prepLoopVideo(videoSuite);
+      ScrollTrigger.create({
+        trigger: "#suite",
+        start: "top 70%",
+        end: "bottom 30%",
+        onEnter: function () { playLoop(videoSuite); },
+        onEnterBack: function () { playLoop(videoSuite); },
+        onLeave: function () { pauseLoop(videoSuite); },
+        onLeaveBack: function () { pauseLoop(videoSuite); }
+      });
+    }
+
+    // —— 05 GARDENS (loop on enter) ——
+    if (videoGardens) {
+      prepLoopVideo(videoGardens);
+      ScrollTrigger.create({
+        trigger: "#gardens",
+        start: "top 70%",
+        end: "bottom 30%",
+        onEnter: function () { playLoop(videoGardens); },
+        onEnterBack: function () { playLoop(videoGardens); },
+        onLeave: function () { pauseLoop(videoGardens); },
+        onLeaveBack: function () { pauseLoop(videoGardens); }
+      });
+    }
+
+    // —— 06 FINALE (scrub night) ——
     if (canScrub && videoFinale) {
-      ScrollTrigger.create(Object.assign({}, scrubOpts, {
-        trigger: "#finale", start: "top top", end: "+=160%",
+      ScrollTrigger.create(Object.assign({}, pinBase, {
+        trigger: "#finale",
+        start: "top top",
+        end: "+=170%",
         onUpdate: function (self) { setScrubTarget(videoFinale, self.progress); }
       }));
     }
 
-    gsap.utils.toArray(".chapter-durbar .chapter-content, .chapter-gardens .chapter-content, .chapter-suite .chapter-content").forEach(function (el) {
-      gsap.to(el, { yPercent: -6, ease: "none", scrollTrigger: {
-        trigger: el.closest(".chapter"), start: "top bottom", end: "bottom top", scrub: true
-      }});
+    // Soft content drift on loop chapters only
+    gsap.utils.toArray("#durbar .chapter-content, #gardens .chapter-content, #suite .chapter-content").forEach(function (el) {
+      gsap.to(el, {
+        yPercent: -5,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el.closest(".chapter"),
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
+      });
     });
   }
 
   async function boot() {
     await Promise.all(scrubVideos.map(armScrubVideo));
+    loopVideos.forEach(prepLoopVideo);
     hidePreloader();
     setTimeout(function () {
-      initLenis(); initMagnetic(); initLoopVideos(); initScrollTriggers();
-      setTimeout(function () { if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh(); }, 350);
-    }, 80);
+      initLenis();
+      initMagnetic();
+      initScrollTriggers();
+      setTimeout(function () {
+        if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+      }, 400);
+    }, 60);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
